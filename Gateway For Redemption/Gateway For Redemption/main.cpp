@@ -1,8 +1,14 @@
 /// <summary>
-/// simple game loop for SFML[2.5.1]
+/// -----------------------------------
+/// //////////////////////////////////
 /// 
-/// @author Peter Lowe
-/// @date May 2019
+/// Gateway to Redemption
+/// 
+/// \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+/// ----------------------------------
+/// 
+/// @date April 2022
+/// 
 /// </summary>
 
 #ifdef _DEBUG 
@@ -17,15 +23,16 @@
 #pragma comment(lib,"sfml-system.lib") 
 #pragma comment(lib,"sfml-window.lib") 
 #pragma comment(lib,"sfml-network.lib") 
-#endif 
+#endif
 
 
 #include "Game.h"
 
 /// <summary>
-/// main enrtry point
+/// main entry point
 /// </summary>
 /// <returns>success or failure</returns>
+
 int main()
 {
 	Game game;

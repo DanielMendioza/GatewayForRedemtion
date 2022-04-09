@@ -10,6 +10,7 @@
 /// Don't forget the endif at the bottom
 /// </summary>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 class Game
 {
@@ -28,14 +29,26 @@ private:
 	void update(sf::Time t_deltaTime);
 	void render();
 	
-	void setupFontAndText();
-	void setupSprite();
+	void loadContent();
+	//void setupSprite();
+	sf::Text m_menuMessage[3];
+	sf::Text m_menuButtonText[3];
+	int gamemode = splashscreen;
+	sf::Music m_music;
+	sf::SoundBuffer m_musicbuffer;
+
+	enum screen {
+		splashscreen,
+		mainmenu,
+		instructions,
+		gameplay,
+		endscreen
+	};
+	int count = 0;
+	sf::Text m_message;
+	sf::Font m_gameFont;
 
 	sf::RenderWindow m_window; // main SFML window
-	sf::Font m_ArialBlackfont; // font used by message
-	sf::Text m_welcomeMessage; // text used for message on screen
-	sf::Texture m_logoTexture; // texture used for sfml logo
-	sf::Sprite m_logoSprite; // sprite used for sfml logo
 	bool m_exitGame; // control exiting game
 
 };

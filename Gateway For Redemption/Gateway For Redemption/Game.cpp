@@ -6,6 +6,7 @@
 /// </summary>
 
 #include "Game.h"
+#include "SFML/Audio.hpp"
 #include <iostream>
 
 
@@ -17,11 +18,11 @@
 /// load and setup thne image
 /// </summary>
 Game::Game() :
-	m_window{ sf::VideoMode{ 800U, 600U, 32U }, "SFML Game" },
+	m_window{ sf::VideoMode{ 1200U, 900U, 32U }, "SFML Game" },
 	m_exitGame{false} //when true game will exit
 {
-	setupFontAndText(); // load font 
-	setupSprite(); // load texture
+	loadContent(); // load font 
+	//setupSprite(); // load texture
 }
 
 /// <summary>
@@ -103,6 +104,84 @@ void Game::update(sf::Time t_deltaTime)
 	{
 		m_window.close();
 	}
+	if (gamemode == splashscreen)
+	{
+		m_music.play();
+		m_music.setLoop(true);
+		m_music.setVolume(70);
+		m_music.setRelativeToListener(true);
+		count++;
+		m_message.setString("Created, Produced and Directed by \n Obrigado Studios");
+		m_message.setCharacterSize(30U);
+		m_message.setOrigin(m_message.getGlobalBounds().width / 2, m_message.getGlobalBounds().height / 2);
+		m_message.setLineSpacing(5);
+		m_message.setPosition(600.0f, 450.0f);
+		m_message.setFillColor(sf::Color::White);
+		m_message.setFont(m_gameFont);
+		std::cout << std::to_string(count) + "\n";
+		if (count == 180)
+		{ 
+			gamemode = mainmenu;
+		}
+	}
+	if (gamemode == mainmenu)
+	{
+		
+		sf::String m_menuButtonText[] = { "Press Enter to Play", "Instructions", "Press Esc to Quit" };
+		for (size_t i = 0; i < 2; i++)
+		{
+			m_menuMessage[i].setFont(m_gameFont);
+			m_menuMessage[i].setString(m_menuButtonText[i]);
+			m_menuMessage[i].setCharacterSize(30U);
+			m_menuMessage[i].setPosition(600.0f - m_menuMessage[i].getGlobalBounds().width / 2, 200.0f * (i + 1));
+			m_menuMessage[i].setFillColor(sf::Color::White);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
+		{
+			gamemode = instructions;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+		{
+			gamemode = gameplay;
+		}
+	}
+	if (gamemode == instructions)
+	{
+		m_message.setString("Use the Arrow Keys to move\nspacebar to shoot the enemies\nPress Backspace to return to main menu\nS U R V I V E !");
+		m_message.setCharacterSize(30U);
+		m_message.setPosition(600.0f - m_message.getGlobalBounds().width / 2, 450.0f - m_message.getGlobalBounds().height / 2);//sets the messaqge on the middle of the screen
+		m_message.setFillColor(sf::Color::White);
+		m_message.setLineSpacing(1.0f);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace))
+		{
+			gamemode = mainmenu;
+		}
+	}
+	if (gamemode == gameplay)
+	{
+		m_message.setString("Insert gameplay here \n Press enter to end game");
+		m_message.setCharacterSize(60U);
+		m_message.setPosition(600.0f - m_message.getGlobalBounds().width / 2, 450.0f - m_message.getGlobalBounds().height / 2);
+		m_message.setFillColor(sf::Color::White);
+		m_message.setFont(m_gameFont);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+		{
+			gamemode = endscreen;
+		}
+	}
+	if (gamemode == endscreen) 
+	{
+		m_message.setString("You Died magically\n Press space to Try Again!");
+		m_message.setCharacterSize(30U);
+		m_message.setPosition(600.0f - m_message.getGlobalBounds().width / 2, 450.0f - m_message.getGlobalBounds().height / 2);//sets the messaqge on the middle of the screen
+		m_message.setFillColor(sf::Color::White);
+		m_message.setLineSpacing(3.0f);
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		{
+			gamemode = gameplay;
+		}
+	}
 }
 
 /// <summary>
@@ -111,41 +190,64 @@ void Game::update(sf::Time t_deltaTime)
 void Game::render()
 {
 	m_window.clear(sf::Color::White);
-	m_window.draw(m_welcomeMessage);
-	m_window.draw(m_logoSprite);
+	if (gamemode == splashscreen)
+	{
+		m_window.clear(sf::Color::Green);
+		m_window.draw(m_message);
+	}
+	if (gamemode == mainmenu)
+	{
+		m_window.clear(sf::Color(40, 116, 237));
+		for (size_t i = 0; i < 3; i++)
+		{
+			m_window.draw(m_menuMessage[i]);
+		}
+	}
+	if (gamemode == instructions)
+	{
+		m_window.clear(sf::Color(40, 187, 197));
+		m_window.draw(m_message);
+	}
+	if (gamemode == gameplay)
+	{
+		m_window.clear(sf::Color(157, 132, 184));
+		m_window.draw(m_message);
+	}
+	if (gamemode == endscreen)
+	{
+		m_window.clear(sf::Color::Red);
+		m_window.draw(m_message);
+	}
 	m_window.display();
 }
 
 /// <summary>
 /// load the font and setup the text message for screen
 /// </summary>
-void Game::setupFontAndText()
+void Game::loadContent()
 {
-	if (!m_ArialBlackfont.loadFromFile("ASSETS\\FONTS\\ariblk.ttf"))
+	if (!m_gameFont.loadFromFile("ASSETS\\FONTS\\Copperplate Gothic Bold Regular.ttf"))
 	{
 		std::cout << "problem loading arial black font" << std::endl;
 	}
-	m_welcomeMessage.setFont(m_ArialBlackfont);
-	m_welcomeMessage.setString("SFML Game");
-	m_welcomeMessage.setStyle(sf::Text::Underlined | sf::Text::Italic | sf::Text::Bold);
-	m_welcomeMessage.setPosition(40.0f, 40.0f);
-	m_welcomeMessage.setCharacterSize(80U);
-	m_welcomeMessage.setOutlineColor(sf::Color::Red);
-	m_welcomeMessage.setFillColor(sf::Color::Black);
-	m_welcomeMessage.setOutlineThickness(3.0f);
+	m_message.setFont(m_gameFont);
 
+	if (!m_music.openFromFile("ASSETS\\AUDIO\\Silhouette.ogg"))
+	{
+		std::cout << "error loading music file, opps...";
+	}
 }
 
 /// <summary>
 /// load the texture and setup the sprite for the logo
 /// </summary>
-void Game::setupSprite()
-{
-	if (!m_logoTexture.loadFromFile("ASSETS\\IMAGES\\SFML-LOGO.png"))
-	{
-		// simple error message if previous call fails
-		std::cout << "problem loading logo" << std::endl;
-	}
-	m_logoSprite.setTexture(m_logoTexture);
-	m_logoSprite.setPosition(300.0f, 180.0f);
-}
+//void Game::setupSprite()
+//{
+//	if (!m_gameFont.loadFromFile("ASSETS\\IMAGES\\SFML-LOGO.png"))
+//	{
+//		// simple error message if previous call fails
+//		std::cout << "problem loading logo" << std::endl;
+//	}
+//	m_logoSprite.setTexture(m_logoTexture);
+//	m_logoSprite.setPosition(300.0f, 180.0f);
+//}
